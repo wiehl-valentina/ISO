@@ -48,4 +48,5 @@ for elem in "$@"; do
     fi 
 done
 
+# acumula el contenido del arreglo
 sum

@@ -13,9 +13,10 @@ if (( $# < 1 )); then
 fi
 
 # para cada usuario chequea si existe y elabora el informe
+ARCHIVOS_NULOS="Cantidad de archivos: 0."
 for user in "$@"; do
     echo "Usuario: $user."
-    CONSULTA=`getent passwd "$user"`
+    CONSULTA=$(getent passwd "$user")
     if [ -n "$CONSULTA" ]; then
         HOME=$(echo "$CONSULTA" | cut -d: -f6)
         if [ -n "$HOME" ] && [ -d "$HOME" ]; then
@@ -24,11 +25,11 @@ for user in "$@"; do
             echo "Cantidad de archivos: $ARCHIVOS"
         else
             echo "El usuario no tiene directorio personal."
-            echo "Cantidad de archivos: 0."
+            echo "$ARCHIVOS_NULOS"
         fi
     else
         echo "El usuario no existe."
-        echo "Cantidad de archivos: 0."
+        echo "$ARCHIVOS_NULOS"
     fi
     echo
 done
