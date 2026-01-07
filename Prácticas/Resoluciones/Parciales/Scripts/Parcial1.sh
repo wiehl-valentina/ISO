@@ -26,7 +26,7 @@ while true; do
     # recorre los directorios extraídos de /etc/passwd
     while IFS= read -r USER_HOME; do 
         # si el directorio no existe, saltea la iteración
-        if [ -d "$USER_HOME" ] || continue
+        [ -d "$USER_HOME" ] || continue
 
         # recorre el directorio y sus subdirectorios buscando el archivo del parámetro
         while IFS= read -r ARCHIVO_ENCONTRADO; do
