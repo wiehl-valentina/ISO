@@ -34,7 +34,7 @@ push() {
 
 pop() {
     # valida que la cola tenga elementos para eliminar
-    if (( "${#QUEUE[@]}" >= 1 )); then
+    if (( "${#QUEUE[@]}" > 0 )); then
         echo "${QUEUE[0]}"
         QUEUE=("${QUEUE[@]:1}")
     else 
@@ -57,7 +57,7 @@ size() {
 }
 
 list() {
-    if (( "${#QUEUE[@]}" >= 1 )); then
+    if (( "${#QUEUE[@]}" > 0 )); then
         echo "${QUEUE[@]}"
     else 
         echo "La cola no posee elementos."
