@@ -16,7 +16,7 @@ echo "--------------------------------"
 echo
 
 while IFS=: read -r USERNAME _ _ _ _ USER_HOME _; do
-    if [ -d "$USER_HOME" ]; then
+    if [[ -n "$USER_HOME" && -d "$USER_HOME" ]]; then
         echo "$USERNAME"
         encontre=1
     fi
