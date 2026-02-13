@@ -40,7 +40,7 @@ construir_reporte() {
                 echo "El directorio personal existe"
                 echo "Ruta: $HOME_DIR"
                 # busca cantidad de archivos en home
-                ARCHIVOS=$(find "$HOME_DIR" -maxdepth 1 -type f | wc -l)
+                ARCHIVOS=$(find "$HOME_DIR" -maxdepth 1 -type f 2>/dev/null | wc -l)
             elif [[ -n "$HOME_DIR" && ! -d "$HOME_DIR" ]]; then
                 echo "El directorio personal no existe"
             elif [[ -z "$HOME_DIR" ]]; then
