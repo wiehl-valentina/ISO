@@ -1,0 +1,43 @@
+b.​ Si se utiliza como unidad de asignación el cluster de disco de 2 KibiBytes
+i.​ ¿Cuántas direcciones a clusters puede contener un cluster de disco?
+ii.​ ¿Cuál sería el tamaño máximo que un archivo podría alcanzar?
+iii.​ ¿Cuántos clusters se necesitan para almacenar cada uno de los archivos
+antes enumerados? Indique el tamaño físico que se requirió para
+almacenar cada uno.
+iv.​ Indique la fragmentación interna que se produce para cada uno de los
+archivos antes enumerados.
+
+i) 2 * 2^10 = 2^1 * 2^10 = 2^11 bytes / 2^2 bytes (tamaño de la dirección) = 2^9 direcciones = 512 direcciones
+
+ii) direccionamiento directo = 10 clusters
+    direccionamiento indirecto simple = 1 * 512 = 512 clusters
+    direccionamiento indirecto doble = 2 * 512 * 512 = 524288 clusters  
+
+    total clusters = 10 + 512 + 524288 = 524810 clusters
+    tamaño máximo = 524810 * 2 KiB = 1.049.620 KiB
+
+iii) *Archivo A: 55 KiB / 2 KiB = 28 clusters de datos + 1 cluster índice dir simple = 29 clusters
+     *Archivo B: 12 KiB / 2 KiB = 6 clusters de datos = 6 clusters dir directo
+     *Archivo C: 1075 KiB / 2 KiB = 538 clusters de datos + 1 cluster índice simple + 1 cluster índice doble + 1 cluster secundario para 
+                                    guardar las 16 direcciones restantes = 541 clusters
+
+     *Para el archivo A fueron necesarios 29 clusters * 2048 bytes = 59392 bytes 
+     *Para el archivo B fueron necesarios 6 clusters * 2048 bytes = 12288 bytes 
+     *Para el archivo C fueron necesarios 541 clusters * 2048 bytes = 1.107.968 bytes 
+
+iv)  *Archivo A: 
+        * Clusters de datos = 28 - 27.5 = 0.5 cluster de fragmentación interna = 1024 bytes 
+        * Clusters índices = 512 - 18 = 494 direcciones = 494 * 4 bytes = 1976 bytes
+    
+     Fragmentación total: 1024 + 1976 bytes = 3000 bytes
+
+     *Archivo B:
+        * no tiene fragmentación interna
+
+     *Archivo C:
+        * Clusters de datos = 538 - 537.5 = 0.5 cluster de fragmentación interna = 1024 bytes de fragmentación
+        * Cluster índices:
+            * Cluster secundario = 512 - 16 = 496 direcciones = 496 * 4 bytes = 1984 bytes
+            * Cluster índice indirecto doble = 512 - 1 = 511 direcciones = 511 direcciones * 4 bytes = 2044 bytes
+
+     Fragmentación total: 1024 + 1984 + 2044 bytes = 5052 bytes

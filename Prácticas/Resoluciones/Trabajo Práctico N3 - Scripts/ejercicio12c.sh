@@ -1,6 +1,10 @@
 #!/bin/bash
+# Realizar una calculadora que ejecute las 4 operaciones básicas: +, - ,*, %.
+# Esta calculadora debe funcionar recibiendo la operación y los números
+# como parámetros
+
 # controla el pasaje de parámetros
-if [ $# -ne 3 ]; then
+if (( $# != 3 )); then
     echo "Modo de uso: $0 num1 operación num2"
     echo "En caso de multiplicación: $0 num1 \* num2"
     exit 1

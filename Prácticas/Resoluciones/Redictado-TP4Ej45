@@ -1,0 +1,63 @@
+45. Considerando que el fileSystem se utiliza en un disco con las siguientes características:
+➢​ 6 platos, con 2 caras útiles cada uno
+➢​ 2500 pistas por cara y 100 sectores por pista de 512 bytes cada uno.
+➢​ 7200 RPM
+➢​ seek type de 10,5 ms
+➢​ velocidad de transferencia de 146 MiB/seg (Mebibytes por segundo)
+
+Calcule el tiempo de transferencia de los 3 archivos.
+
+●​ ArchivoA: de 55 KibiBytes
+●​ ArchivoB: de 12 KibiBytes
+●​ ArchivoC: de 1075 KibiBytes
+
+Seek Time: 10,5ms
+Latency Time: 
+    * Tiempo que tarda el disco en dar una vuelta: 60.000ms / 7200RPM = 8,33ms
+    * Tiempo que tarda el disco en dar media vuelta: 8,33ms / 2 = 4,16ms
+
+La latencia se calcula como el tiempo que tarda el disco en dar media vuelta.
+
+INCISO A (sector de 512 bytes)
+
+* Archivo A
+
+Transfer Time: 56,832 bytes / 153.092.096 bytes/seg = 0.00037 segundos = 0,37ms
+
+Tiempo de transferencia real: 10,5 + 4,16 + 0,37 = 15,03ms 
+
+* Archivo B
+
+Transfer Time: 12,800 bytes / 153.092.096 bytes/seg = 0.000084 segundos = 0,08ms
+
+Tiempo de transferencia real: 10,5 + 4,16 + 0.084 = 14,74ms
+
+* Archivo C
+
+Transfer Time: 1,110,016 bytes / 153.092.096 bytes/seg = 0.0073 segundos = 7,3ms
+
+Tiempo de transferencia real: 10,5 + 4,16 + 7,3 = 21.96ms
+
+INCISO B (cluster de 2KiB)
+
+* Archivo A
+
+Asumiendo que el grabado es secuencial, el tiempo de transferencia se puede calcular como 
+el tamaño total del archivo dividido la velocidad de transferencia. 
+
+Transfer Time: 59392 bytes / 153.092.096 bytes/seg = 0.00039 segundos = 0,39ms 
+
+Tiempo de transferencia real: 10,5 + 4,16 + 0,39 = 15,05ms 
+
+* Archivo B
+
+Transfer Time: 12288 bytes / 153.092.096 bytes/seg = 0.000080 segundos = 0,08ms 
+
+Tiempo de transferencia real: 10,5 + 4,16 + 0,08 = 14,74ms 
+
+* Archivo C
+
+Transfer Time: 1.107.968 bytes / 153.092.096 bytes/seg = 0.0072 segundos = 7,2ms 
+
+Tiempo de transferencia real: 10,5 + 4,16 + 7,2 = 21,86ms 
+

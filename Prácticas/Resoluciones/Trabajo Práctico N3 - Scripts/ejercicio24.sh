@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# Realice un script que agregue en un arreglo todos los nombres de los usuarios
+# del sistema pertenecientes al grupo “users”. Adicionalmente el script puede
+#recibir como parámetro:
+# ➢​ “-b n”: Retorna el elemento de la posición n del arreglo si el mismo
+# existe. Caso contrario, un mensaje de error.
+# ➢​ “-l”: Devuelve la longitud del arreglo
+# ➢​ “-i”: Imprime todos los elementos del arreglo en pantalla
+
 # agrega los nombres de los usuarios del grupo users en usuarios_users
 # gentent group users --> devuelve la línea del archivo /etc/passwd del grupo users --> users:x:100:juan,maria,luis
 # awk -F: '{print $4}' --> divide en campos con : como referencia y se queda con el cuarto campo (juan, maria, luis)
@@ -23,7 +32,6 @@ if (( $# == 2 )); then
         # parámetros correctos y el arreglo posee posición n, retorna el elemento en dicha posición
         if (( $n < "${#usuarios_users[@]}" )); then 
             echo "${usuarios_users[$n]}"
-        # parámetros correctos y el arreglo no posee posición n, informa error
         else
             echo "Error: no existe la posición $n del arreglo"
             exit 1
@@ -39,9 +47,7 @@ if (( $# == 1 )); then
             echo "${#usuarios_users[@]}"
             ;;
         -i)
-            for elem in "${usuarios_users[@]}"; do 
-                echo "$elem"
-            done
+            echo "${usuarios_users[@]}"
             ;;
         *)
             echo "Parámetro incorrecto."

@@ -1,7 +1,7 @@
 #!/bin/bash
 # se implementa un set haciendo uso de un array asociativo
 # ** no importa realmente el valor sino las claves únicas
-# declara el set
+
 declare -Ag set
 
 # implementación de funciones

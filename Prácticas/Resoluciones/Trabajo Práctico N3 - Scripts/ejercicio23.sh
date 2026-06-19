@@ -1,18 +1,30 @@
 #!/bin/bash
+# Dada la definición de 2 vectores del mismo tamaño y cuyas longitudes no seconocen.
+# vector1=( 1 .. N)
+# vector2=( 1.. N)
+# Por ejemplo:
+# vector1=( 1 80 65 35 2 ) y vector2=( 5 98 3 41 8 ).
+# Complete este script de manera tal de implementar la suma elemento a
+# elemento entre ambos vectores y que la misma sea impresa en pantalla de la
+# siguiente manera:
+# ➢​ La suma de los elementos de la posición 0 de los vectores es 6
+# ➢​ La suma de los elementos de la posición 1 de los vectores es 178 ...
+# ➢​ La suma de los elementos de la posición 4 de los vectores es 10
 
-# declara los 2 vectores globales
 vector1=(1 80 65 35 2)
-vector2=(5 98 3 41 8)
+vector2=(5 98 3 41 8 7 13)
 
 sumar() {
-    # referencias a los parámetros
-    local -n arreglo1=$1
-    local -n arreglo2=$2
-    # recorro ambos y voy sumando
-    for i in "${!arreglo1[@]}"; do
-        suma=$(( arreglo1[i] + arreglo2[i] ))
+    local max=${#vector1[@]}
+
+    if (( ${#vector2[@]} > max )); then
+        max=${#vector2[@]}
+    fi
+
+    for (( i=0; i<max; i++ )); do
+        local suma=$(( vector1[i] + vector2[i] ))
         echo "La suma de los elementos en la posición $i de los vectores es $suma"
     done 
 }
 
-sumar vector1 vector2
+sumar 
