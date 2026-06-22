@@ -1,3 +1,4 @@
+#!/bin/bash
 # Utilizando Bash, desarrolle las siguientes funciones para implementar
 # una estructura de LISTA, la que deberá almacenarse en un arreglo.
 
@@ -31,77 +32,68 @@
 # Recuerde validar en cada función que los parámetros y el estado
 # de la lista sean adecuados para la operación que se intente realizar.
 
-#!/bin/bash
+declare -a LISTA
 
-LISTA=()
+init() {
+    LISTA=("$@")
+}
 
 push() {
-    if (( $# < 1 )); then
-        echo "Modo de uso: $0 <param 1> <param 2> ... <param n>"
+    if (( $# == 0 )); then
+        echo "Modo de uso: push <elementos>"
         return 1
     fi
 
-    for param in "$@"; do
-        LISTA+=("$param")
+    for elem in "$@"; do
+        LISTA+=("$elem")
     done
+    return 0
 }
 
-init() {
-    LISTA=()
-
-    if (( $# > 0 )); then
-        push "$@"
-    fi
-}
-
-size() {
-    echo "${#LISTA[@]}"
-}
-
-vacia() {
+is_empty() {
     if (( "${#LISTA[@]}" == 0 )); then
         return 0
     fi
     return 1
 }
 
-last() {    
-    if vacia; then
-        echo "Error: lista vacía."
+last() {
+    if is_empty; then
+        echo "Error: la lista está vacía."
         return 1
     fi
-    local INDEX=$(( ${#LISTA[@]} - 1 ))
-    echo "${LISTA[$INDEX]}"
-    unset LISTA[$INDEX]
+    echo "${LISTA[-1]}"
+    unset 'LISTA[-1]'
+    LISTA=("${LISTA[@]}")
+    return 0
 }
 
 first() {
-    if vacia; then
-        echo "Error: lista vacía."
+    if is_empty; then
+        echo "Error: la lista está vacía."
         return 1
     fi
     echo "${LISTA[0]}"
-    LISTA=("${LISTA[@]:1}")
+    unset 'LISTA[0]'
+    LISTA=("${LISTA[@]}")
+    return 0
+}
+
+size() {
+    echo "${#LISTA[@]}"
 }
 
 print() {
-    if vacia; then
-        echo "La lista está vacía."
-        return 1
-    fi
     echo "${LISTA[@]}"
 }
 
-# programa principal
-
-init 1 3 5
+init
+push "arctic monkeys" "the strokes" "abba"
+print
 size
-
-push 7 9 11
-size
-
 first
 print
-
-last 
+last
 print
+size
+

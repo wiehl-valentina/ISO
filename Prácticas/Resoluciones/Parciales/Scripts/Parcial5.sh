@@ -1,3 +1,4 @@
+#!/bin/bash
 # Realizá un script de Bash que almacene en un arreglo los nombres de todos
 # los usuarios del sistema que tengan un patrón en su nombre de usuario.
 #
@@ -24,84 +25,72 @@
 # operaciones sobre el arreglo, validando los parámetros que recibe cuando
 # fuera posible.
 
-#!/bin/bash
-
-# valida el pasaje de parámetros para que contenga un solo patrón de búsqueda
 if (( $# != 1 )); then
     echo "Modo de uso: $0 <patrón>"
     exit 1
-fi
+fi 
 
-# declaración de variables
 PATRON="$1"
 USUARIOS=()
 
-# itera los nombres de usuario que coinciden con el patrón y los agrega al arreglo
-while IFS= read -r USER; do
-    USUARIOS+=("$USER")
+while IFS=: read -r USERNAME; do
+    USUARIOS+=("$USERNAME")
 done < <(cut -d: -f1 /etc/passwd | grep "$PATRON")
 
-# implementación de funciones
+# funciones
 listar() {
-    # valida que haya usuarios para listar
-    if (( ${#USUARIOS[@]} == 0 )); then
-        echo "No hay usuarios en el arreglo."
-        return 1
-    fi
-        
-    for user in "${USUARIOS[@]}"; do
-        echo "$user"
-    done
-}
-
-
-eliminar() {
-    #valida que haya usuarios para eliminar
-    if (( ${#USUARIOS[@]} == 0 )); then
-        echo "No hay usuarios para eliminar."
-        return 1
-    fi
-
     for i in "${!USUARIOS[@]}"; do
         echo "$i - ${USUARIOS[$i]}"
     done
-    
-    # soiicita al usuario un índice a eliminar y verifica que sea válido
-    read -p "Ingrese el índice a eliminar: " indice
-    if [[ ! "$indice" =~ ^[0-9]+$ ]] || (( indice < 0 || indice >= ${#USUARIOS[@]} )); then
-        echo "Índice inválido."
+}
+
+eliminar_usuario() {
+    if ! [[ "$1" =~ ^[0-9]+$ ]]; then
+        echo "Error: debe ingresar un índice numérico válido."
         return 1
     fi
-
-    unset USUARIOS[$indice]
+    if (( "$1" >= "${#USUARIOS[@]}" )); then
+        echo "Error: índice fuera de rango."
+        return 1
+    fi
+    unset 'USUARIOS[$1]'
     USUARIOS=("${USUARIOS[@]}")
-    echo "Usuario eliminado correctamente."
 }
 
 contar() {
-    echo "Cantidad de usuarios: ${#USUARIOS[@]}"
+    echo "${#USUARIOS[@]}"
 }
 
-# implementación del menu
-PS3="Seleccione una opción: "
-select opcion in listar eliminar contar salir; do 
-    case "$opcion" in
-        listar) 
+
+select opcion in Listar Eliminar Contar Salir; do 
+    case $opcion in
+        "Listar")
             listar
-        ;;
-        eliminar)
-            eliminar
-            ;;
-        contar)
-            contar
-            ;;
-        salir)
             echo
-            echo "Cerrando el menu..."
-            exit 0
+            ;;
+        "Eliminar")
+            listar
+            echo
+            read -p "Ingrese el índice: " index
+            eliminar_usuario "$index"
+            echo
+            ;;
+        "Contar")
+            contar
+            echo
+            ;;
+        "Salir")
+            echo "Saliendo del programa..."
+            break
             ;;
         *)
             echo "Opción inválida."
+            echo
             ;;
     esac
 done
+
+
+
+
+

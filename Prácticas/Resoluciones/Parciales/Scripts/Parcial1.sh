@@ -1,3 +1,4 @@
+#!/bin/bash 
 # Realizar un script en Bash que, cada 1 hora, busque, en cada directorio home (y sus subdirectorios) de cada usuario del
 # sistema, si el usuario contiene un archivo cuyo nombre es igual al parámetro que debe recibir el script. En caso de no
 # encontrarse esta situación, se debe registrar, en un archivo de log llamado “archivo-encontrado<PARAMETRO>.log”
@@ -7,40 +8,42 @@
 # parámetro (que es el nombre del archivo a buscar) y, en caso contrario, debe imprimir un mensaje de error correspondiente
 # y finalizar con el código de error 2
 
-#!/bin/bash 
-
-# valida el pasaje de parámetros
-if (( #$ != 1 )); then
-    echo "Parámetro inválido."
-    echo "Modo de uso: $0 <param>"
+if (( $# != 1 )); then
+    echo "Modo de uso: $0 <nombre_archivo>"
     exit 2
-fi 
+fi
 
-# declara variables
-ARCHIVO="$1"
-LOG="var/log/archivo-encontrado${ARCHIVO}.log"
-CONTADOR=0
+PARAM="$1"
+OUTPUT="/var/log/archivo-encontrado$PARAM.log"
 
-# while que itera cada 60 minutos
-while true; do 
-    # recorre los directorios extraídos de /etc/passwd
-    while IFS= read -r USER_HOME; do 
-        # si el directorio no existe, saltea la iteración
-        [ -d "$USER_HOME" ] || continue
+encontrado=0
+while true; do
 
-        # recorre el directorio y sus subdirectorios buscando el archivo del parámetro
-        while IFS= read -r ARCHIVO_ENCONTRADO; do
-            echo "$ARCHIVO_ENCONTRADO" >> "$LOG"
-            ((CONTADOR++))
+    declare -A homes_vistos
+    directorios=()
 
-            # si el archivo se encontró 10 veces, termina el script
-            if (( "$CONTADOR" == 10 )); then
+    while IFS=: read -r _ _ _ _ _ DIR _; do
+        if [[ -d "$DIR" && -z "${homes_vistos[$DIR]}" ]]; then
+            directorios+=("$DIR")
+            homes_vistos["$DIR"]=1
+        fi
+    done < /etc/passwd
+
+    while IFS= read -r filepath; do
+        if [[ -n "$filepath" ]]; then
+            echo "$filepath" >> "$OUTPUT"
+            ((encontrado++))
+
+            if (( encontrado >= 10 )); then
                 exit 0
-            fi 
-        done < <(find "$USER_HOME" -type f -name "$ARCHIVO" 2>/dev/null)
-    done < <(cut -d: -f6 /etc/passwd)
-
-    # espera 1 hora para la próxima iteración de búsqueda
-    sleep 3600
+            fi
+        fi
+    done < <(find "${directorios[@]}" -type f -name "$PARAM" 2>/dev/null)
+    
+    sleep 1h
 done
+
+
+
+
 

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Escribir un script en Bash que reciba como argumento una lista de nombres de usuario (debe validar que se reciba, al
 # menos, uno) y, para cada uno de los usuarios válidos que se hayan recibido, deberá imprimir un reporte con la siguiente
 # información:
@@ -6,35 +7,23 @@
 # • Cantidad de archivos (no directorios) en su directorio personal. Deberá informar 0 si el usuario no posee directorio
 # personal o no existe
 
-# valida el pasaje de parámetros
-if (( $# < 1 )); then
-    echo "Debe pasar al menos un parámetro."
+if (( $# == 0 )); then 
+    echo "Modo de uso: $0 <lista_de_usuarios>"
     exit 1
 fi
 
-# para cada usuario chequea si existe y elabora el informe
-ARCHIVOS_NULOS="Cantidad de archivos: 0."
 for user in "$@"; do
-    echo "Usuario: $user."
-    CONSULTA=$(getent passwd "$user")
-    if [ -n "$CONSULTA" ]; then
-        HOME=$(echo "$CONSULTA" | cut -d: -f6)
-        if [ -n "$HOME" ] && [ -d "$HOME" ]; then
-            echo "Directorio personal: $HOME."
-            ARCHIVOS=$(find "$HOME" -maxdepth 1 -type f | wc -l)
-            echo "Cantidad de archivos: $ARCHIVOS"
-        else
-            echo "El usuario no tiene directorio personal."
-            echo "$ARCHIVOS_NULOS"
+    while IFS=: read -r USERNAME _ _ _ _ DIR _; do 
+        if [[ "$USERNAME" == "$user" ]]; then
+            echo "Usuario: $user"
+            if [[ -d "$DIR" ]]; then
+                echo "Directorio personal: $DIR"
+                echo "Archivos en su directorio personal: $(find "$DIR" -type f 2>/dev/null | wc -l)"
+            else
+                echo "Archivos en su directorio personal: 0"
+            fi
+            break
         fi
-    else
-        echo "El usuario no existe."
-        echo "$ARCHIVOS_NULOS"
-    fi
-    echo
+    done < /etc/passwd
 done
-
-    
-
-
 

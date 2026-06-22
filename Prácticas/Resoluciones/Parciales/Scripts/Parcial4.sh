@@ -1,3 +1,4 @@
+#!/bin/bash
 # Utilizando Bash, desarrolle las siguientes funciones para implementar una estructura de cola FIFO (que deberá
 # almacenarse en un arreglo):
 # • init: inicializa la cola, no recibe argumentos.
@@ -11,73 +12,67 @@
 # invoca cada una de las funciones. Recordar validar, en cada función, que los parámetros y el estado de la cola FIFO sean
 # adecuados para la operación que se intente realizar.
 
-#!/bin/bash
+declare -a queue 
 
-# declaración de la cola
-QUEUE=()
-
-# implementación de funciones
 init() {
-    QUEUE=()
+    queue=()
 }
 
 push() {
-    # valida el pasaje de parámetros
-    if (( $# < 1 )); then
-        echo "Error: es necesario pasar al menos un elemento como parámetro."
+    if (( $# == 0 )); then
+        echo "Modo de uso: push <elementos>"
         return 1
     fi 
-    for elem in "$@"; do 
-        QUEUE+=("$elem")
-    done
+
+    queue+=("$@")
+    return 0
+}
+
+is_empty() {
+    if (( "${#queue[@]}" == 0)); then
+        return 0
+    fi
+    return 1
 }
 
 pop() {
-    # valida que la cola tenga elementos para eliminar
-    if (( "${#QUEUE[@]}" > 0 )); then
-        echo "${QUEUE[0]}"
-        QUEUE=("${QUEUE[@]:1}")
-    else 
-        echo "Error: no hay elementos para eliminar."
+    if is_empty; then
+        echo "Error: la cola está vacía."
         return 1
-    fi 
+    fi
+    echo "${queue[0]}"
+    unset queue[0]
+    queue=("${queue[@]}")
 }
 
 tail() {
-    if (( "${#QUEUE[@]}" >= 1 )); then
-        echo "${QUEUE[${#QUEUE[@]}-1]}"
-    else
-        echo "La cola no posee elementos."
+    if is_empty; then
+        echo "Error: la cola está vacía."
         return 1
     fi
+    echo "${queue[-1]}"
 }
 
 size() {
-    echo "${#QUEUE[@]}"
+    echo "${#queue[@]}"
 }
 
 list() {
-    if (( "${#QUEUE[@]}" > 0 )); then
-        echo "${QUEUE[@]}"
-    else 
-        echo "La cola no posee elementos."
+    if is_empty; then
+        echo "Error: la cola está vacía."
         return 1
     fi
+    echo "${queue[@]}"
 }
 
-# inicializa la cola
-init
-
-# agrega los elemtos 1, 2, 6 y "hola" a la cola e imprime su contenido
-push 1 2 6 "hola"
+init 
+push "arctic monkeys"
+tail
+size
 list
-
-# imprime y elimina el primer elemento de la cola y luego muestra su contenido
+push "tame impala" "the strokes"
+list
 pop
 list
-
-# muestra el tamaño de la cola
-size
-
-# muestra el último elemento de la cola
 tail
+size

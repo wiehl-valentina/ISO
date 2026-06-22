@@ -1,3 +1,4 @@
+#!/bin/bash
 # Implemente un script en Bash que:
 #
 # Conozca todos los usuarios que tiene el sistema y realice
@@ -19,19 +20,18 @@
 # Recuerde que el directorio FHS recomendado para almacenar
 # archivos de log es /var/log.
 
-#!/bin/bash
+while IFS=: read -r USERNAME _ _ _ _ DIR _; do 
+    LINEAS_LOG=$(grep -r "$USERNAME" /var/log 2>/dev/null | wc -l)
+    GRUPOS=$(id -Gn "$USERNAME" 2>/dev/null | wc -w)
 
-while IFS=: -r read USERNAME _ _ _ _ HOME_DIR _; do 
-    # establece la cantidad de grupos a los que pertenece
-    GRUPOS=$(id -nG "$USERNAME" | wc -w)
-    ELEMENTOS=-1
-    LOGS=$(grep -r "$USERNAME" /var/log 2>/dev/null | wc -l)
-    
-    # si tiene un directorio personal válido, cuento los elementos e imprimo
-    if [[ -n "$HOME_DIR" && -d "$HOME_DIR" ]]; then
-        ELEMENTOS=$(find "$HOME_DIR" -mindepth 1 2>/dev/null | wc -l)
-        echo "$USERNAME;$GRUPOS;$HOME_DIR;$ELEMENTOS;$LOGS"
-    else 
-        echo "$USERNAME;$GRUPOS;XXX;$ELEMENTOS;$LOGS"
-    fi 
+    if [[ -d "$DIR" ]]; then
+        PATH_DIR="$DIR"
+        ARCHIVOS=$(find "$DIR" -mindepth 1 -type f 2>/dev/null | wc -l) 
+        DIRECTORIOS=$(find "$DIR" -mindepth 1 -type d 2>/dev/null | wc -l)
+        TOTAL_ARCHIVOS=$(( ARCHIVOS + DIRECTORIOS ))
+    else
+        PATH_DIR="XXX"
+        TOTAL_ARCHIVOS="-1"
+    fi
+    echo "$USERNAME;$GRUPOS;$PATH_DIR;$TOTAL_ARCHIVOS;$LINEAS_LOG"
 done < /etc/passwd

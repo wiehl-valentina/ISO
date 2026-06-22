@@ -28,46 +28,22 @@ fi
 
 NONEXISTENT=0
 
-for elem in "$@"; do 
-    # verifica si es un archivo 
-    if [ -f "$elem" ]; then
-        # si existe, lo comprime y eliminar el original
-        # ** gzip borra el archivo original por defecto, para mantenerlo usar gzip -k archivo
-        gzip "$elem"
-
-        # informa el resultado
-        if (( $? == 0 )); then 
-            echo "El archivo $elem fue comprimido correctamente."
-        else
-            echo "Error al comprimir $elem." 
-        fi
-    # verifica si es un directorio
-    elif [ -d "$elem" ]; then 
-        # verifica si tiene permisos de lectura
-        if [[ -r "$elem" ]]; then
-            # empaqueta y comprime sin eliminar el original
-            tar -czf "$elem.tar.gz" "$elem"
-
-            if (( $? == 0 )); then
-                echo "El directorio $elem se empaquetó y comprimió correctamente."
-            else
-                echo "Error al empaquetar y comprimir $elem."
-            fi
-        fi
-
-        # verifica si tiene permisos de escritura
-        if [[ -w "$elem" ]]; then
-            # elimina el directorio y todo su contenido
-            rm -r "$elem" 
-        fi
-    else
+for param in "$@"; do 
+    if ! [[ -e "$param" ]]; then
         ((NONEXISTENT++))
+    elif [[ -f "$param" ]]; then
+        gzip "$param" 
+    elif [[ -d "$param" ]]; then
+        if [[ -r "$param" ]]; then
+            tar -czf "${param}.tar.gz" "$param"
+        fi
+        if [[ -w "$param" ]]; then
+            rm -r "$param"
+        fi
     fi
-done 
+done
 
 echo "Cantidad de elementos inexistentes: $NONEXISTENT"
-    
-
 
 
         

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Realizar un script en Bash que reciba una cantidad arbitraria de argumentos, de los cuales agregará a un arreglo sólo
 # aquellos que sean números. Una vez armado el arreglo, deberá imprimir la sumatoria de todos los números que éste
 # contenga. Para realizar esto, tiene a su disposición una función llamada is_number definida en el archivo
@@ -10,43 +11,50 @@
 # • all_numbers: retorna todos los números que contiene el arreglo.
 # • sum: retorna la sumatoria de todos los números que el arreglo contiene.
 
-#!/bin/bash
-
-# importa la función is_number
 source /usr/lib/functions.sh
 
-# implementación de funciones
-NUMEROS=()
+if (( $# == 0 )); then
+    echo "Modo de uso: $0 <param1> ..."
+    exit 1
+fi 
+
+declare -a numeros
 
 init() {
-    NUMEROS=()
+    numeros=()
 }
 
 add_number() {
-    NUMEROS+=("$1")
+    if (( $# != 1 )); then
+        echo "Modo de uso: add_numer <número>"
+        return 1
+    fi
+
+    numeros+=("$1")
+    return 0
 }
 
 all_numbers() {
-    echo "${NUMEROS[@]}"
+    echo "${numeros[@]}"
 }
 
 sum() {
-    local SUMA=0
-    for elem in "${NUMEROS[@]}"; do 
-        (( SUMA += elem ))
+    resultado=0
+    for num in "${numeros[@]}"; do
+        (( resultado += num ))
     done
-    echo "$SUMA"
+    echo "$resultado"
 }
 
-# inicializa el arreglo
 init 
 
-# valida parámetros y carga el arreglo
-for elem in "$@"; do 
-    if is_number "$elem"; then
-        add_number "$elem"
-    fi 
+for param in "$@"; do
+    if is_number "$param"; then
+        add_number "$param"
+    fi
 done
 
-# acumula el contenido del arreglo
-sum
+all_numbers
+
+echo "La sumatoria de los números es: $(sum)"
+exit 0

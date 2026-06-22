@@ -1,3 +1,4 @@
+#!/bin/bash
 # Realice un script que agregue todos los nombres de usuario del sistema
 # a un arreglo e implemente las siguientes funciones:
 #
@@ -23,87 +24,76 @@
 #     Imprime todos los nombres de los usuarios que están en el arreglo.
 #     Si está vacío devuelve el código de error 95.
 
-#!/bin/bash
-
-# agrega los nombres de usuario al arreglo
 USUARIOS=()
 
-while IFS=: read -r USER _ _ _ _ _ _; do 
-    USUARIOS+=("$USER")
+while IFS=: read -r USERNAME _ _ _ _ _ _; do 
+    USUARIOS+=("$USERNAME")
 done < /etc/passwd
 
-# implementación de funciones
-
-validar() {
-    if (( $# != 1 )); then
-        echo "Modo de uso: $0 <param 1>"
-        return 1
-    else 
-        return 0
-    fi
-}
-
 existe() {
-    # actúa dependiendo si el nro de parámetros es válido
-    if validar "$@"; then
-        local USER="$1"
-        for elem in "${USUARIOS[@]}"; do 
-            if [[ "$elem" == "$USER" ]]; then
-                return 0
-            fi
-        done
-        return 1
-    else
+    if (( $# != 1 )); then
+        echo "Modo de uso: existe <usuario>"
         return 2
-    fi
+    fi 
+
+    for usuario in "${USUARIOS[@]}"; do
+        if [[ "$usuario" == "$1" ]]; then
+            return 0
+        fi
+    done
+    
+    return 1
 }
 
 eliminar_usuario() {
-    # actúa dependiendo si el nro de parámetros es válido
-    if existe "$@"; then
-        local USER="$1"
+    if (( $# != 1 )); then
+        echo "Modo de uso: eliminar_usuario <usuario>"
+        return 1
+    fi 
+
+    if existe "$1"; then
         for i in "${!USUARIOS[@]}"; do
-            if [[ "${USUARIOS[$i]}" == "$USER" ]]; then
-                unset USUARIOS[$i]
+            if [[ "$1" == "${USUARIOS[$i]}" ]]; then
+                unset "USUARIOS[$i]"
+                USUARIOS=("${USUARIOS[@]}")
                 return 0
             fi
-        done 
+        done
     fi
     return 2
 }
 
 usuarios_con_patron() {
-    local encontre=0
-    if validar "$@"; then
-        local PATRON="$1"
-        for elem in "${USUARIOS[@]}"; do 
-            if [[ "$elem" == *"$PATRON"* ]]; then
-                echo "$elem"
-                encontre=1
-            fi
-        done
+    if (( $# != 1 )); then
+        echo "Modo de uso: usuarios_con_patron <usuario>"
+        return 1
     fi
 
-    # verifico código de retorno
-    if (( encontre == 0)); then
+    encontre=0
+    for user in "${USUARIOS[@]}"; do
+        if [[ "$user" == *"$1"* ]]; then
+            encontre=1
+            echo "$user"
+        fi
+    done 
+
+    if (( encontre == 0 )); then
         return 102
-    fi
-        
+    fi 
+
     return 0
 }
 
 cantidad() {
-    if (( ${#USUARIOS[@]} > 0 )); then
-        echo "${#USUARIOS[@]}"
-    else
+    if (( "${#USUARIOS[@]}" == 0 )); then
         return 95
     fi
+    echo "${#USUARIOS[@]}"
 }
 
 usuarios() {
-    if (( ${#USUARIOS[@]} > 0 )); then
-        echo "${USUARIOS[@]}"
-    else
+    if (( "${#USUARIOS[@]}" == 0 )); then
         return 95
     fi
+    echo "${USUARIOS[@]}"
 }

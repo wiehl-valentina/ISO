@@ -23,47 +23,47 @@
 # estado de la cola FIFO sean adecuados para la operación
 # que se intente realizar.
 
-COLA=()
+declare -a COLA
 
-empty() {
+is_empty() {
     if (( ${#COLA[@]} == 0 )); then
-        echo "Error: la cola está vacía."
         return 0
-    else 
-        return 1
     fi
+    return 1
 }
 
 init() {
+    if (($# != 0 )); then
+        echo "Error: la función no acepta parámetros."
+        return 1
+    fi 
     COLA=()
 }
 
 push() {
-    if (( $# < 1 )); then
-        echo "Modo de uso: $0 <param 1> <param 2> ... <param n>"
+    if (( $# == 0 )); then
+        echo "Modo de uso: push <elemento1> <elemento2> ..."
         return 1
-    fi
-
-    for elem in "$@"; do 
-        COLA+=("$elem")
-    done
+    fi 
+    COLA+=("$@")
 }
 
 pcp() {
-    if empty; then
+    if is_empty; then
+        echo "Error: la cola está vacía."
         return 1
-    
     fi
     echo "${COLA[0]}"
-    COLA=("${COLA[@]:1}")
+    unset 'COLA[0]'
+    COLA=("${COLA[@]}")
 }
 
 tail() {
-    if empty; then
+    if is_empty; then
+        echo "Error: la cola está vacía."
         return 1
     fi
-    local INDEX=$(( ${#COLA[@]} - 1 ))
-    echo "${COLA[$INDEX]}"
+    echo "${COLA[-1]}"
 }
 
 size() {
@@ -71,27 +71,18 @@ size() {
 }
 
 list() {
-    if empty; then
+    if is_empty; then
+        echo "La cola está vacía."
         return 1
-    else
-        echo "${COLA[@]}"
     fi
+    echo "${COLA[@]}"
 }
 
-# inicializa la cola
 init
-
-# agrega los valores 1, 3, 5 en la cola
-push 1 3 5
-# imprime 3 debido a que la cola posee 3 elementos
-size 
-# imprime los 3 elementos
+push "arctic monkeys" "the strokes"
 list
-
-# elimina el elemento en la posición 0 del arreglo e imprime cuál es
-pcp 
-# imprime los 2 elementos que quedan en la cola
-list
-
-# imprime el último elemento de la cola (en este caso 5)
 tail
+size
+pcp
+list
+size

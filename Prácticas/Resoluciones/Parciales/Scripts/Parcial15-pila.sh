@@ -1,3 +1,4 @@
+#!/bin/bash
 # Utilizando Bash, desarrolle las siguientes
 # funciones para implementar una estructura de Pila
 # (LIFO - Last In, First Out), la que deberá almacenarse
@@ -24,17 +25,13 @@
 # y el estado de la pila sean adecuados para la operación
 # que se intente realizar.
 
-#!/bin/bash
+declare -a PILA 
 
-PILA=()
-
-empty() {
-    if (( ${#PILA[@]} == 0 )); then
-        echo "Error: la pila está vacía."
+is_empty() {
+    if (( "${#PILA[@]}" == 0 )); then
         return 0
-    else 
-        return 1
-    fi
+    fi 
+    return 1
 }
 
 init() {
@@ -43,30 +40,27 @@ init() {
 
 push() {
     if (( $# == 0 )); then
-        echo "Modo de uso: $0 <param 1> <param 2> ... <param n>"
+        echo "Modo de uso: push <elementos>"
         return 1
     fi 
-
-    for elem in "$@"; do 
-        PILA+=("$elem")
-    done
+    PILA+=("$@")
 }
 
 pop() {
-    if empty; then
+    if is_empty; then
+        echo "Error: la pila está vacía"
         return 1
-    fi 
-
-    INDEX=$(( ${#PILA[@]} - 1 ))    
-    echo "${PILA[$INDEX]}"
-    PILA=("${PILA[@]:0:$INDEX}")
+    fi
+    echo "${PILA[-1]}"
+    unset 'PILA[-1]'
+    PILA=("${PILA[@]}")
 }
 
 tail() {
-    if empty; then 
+    if is_empty; then
+        echo "Error: la pila está vacía."
         return 1
     fi
-
     echo "${PILA[0]}"
 }
 
